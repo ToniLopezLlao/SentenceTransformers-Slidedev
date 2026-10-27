@@ -93,24 +93,66 @@ theme: dracula
 3. **CLS Pooling**: primer token
 
 ---
+layout: two-cols
+---
 
-# Mean Pooling Visual
+# Mean Pooling
 
-<pre style="font-family: monospace; background: #1e1e1e; padding: 20px; border-radius: 8px; color: #a8ff60;">
-Token 1: [0.1,  0.2,  0.3]
-Token 2: [0.5,  0.6,  0.7]
-         --------
-Mean:    [0.3,  0.4,  0.5]  ← suma i divideix per 2
+**Com ho fa:** fa la mitjana de tots els tokens, número a número.
 
-Operació: (0.1+0.5)/2 = 0.3
-          (0.2+0.6)/2 = 0.4
-          (0.3+0.7)/2 = 0.5
-</pre>
+**Per a què serveix:**
 
-**Avantatges:**
+- Representació general de tota la frase
+- Totes les paraules compten igual
+- És l'opció per defecte de Sentence Transformers
 
-- Simple i ràpid
-- Representa la mitjana
+<div class="mt-4 text-sm opacity-70">Ideal per a semantic search i similitud entre frases.</div>
+
+::right::
+
+<div class="h-full flex items-center justify-center">
+  <PoolingStrategy mode="mean" />
+</div>
+
+---
+layout: two-cols
+---
+
+# CLS Pooling
+
+**Com ho fa:** es queda només amb el vector del token especial `[CLS]`, el primer, i ignora la resta.
+
+**Per a què serveix:**
+
+- Models entrenats perquè el `[CLS]` resumeixi la frase (p. ex. BERT per a classificació)
+- Molt ràpid: no cal operar
+- Si el model no s'ha entrenat així, el resultat és pitjor
+
+::right::
+
+<div class="h-full flex items-center justify-center">
+  <PoolingStrategy mode="cls" />
+</div>
+
+---
+layout: two-cols
+---
+
+# Max Pooling
+
+**Com ho fa:** per a cada posició del vector, es queda amb el valor més alt entre tots els tokens.
+
+**Per a què serveix:**
+
+- Captura les característiques més destacades
+- Útil quan una paraula clau marca el significat
+- Menys sensible a paraules "de farciment"
+
+::right::
+
+<div class="h-full flex items-center justify-center">
+  <PoolingStrategy mode="max" />
+</div>
 
 ---
 
