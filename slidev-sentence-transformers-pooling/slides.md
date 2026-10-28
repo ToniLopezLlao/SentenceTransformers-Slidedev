@@ -29,17 +29,15 @@ Presentació: avui veurem una peça petita però imprescindible de Sentence Tran
 
 # Índex
 
-<v-clicks>
 
 1. **Context:** Transformers i Sentence Transformers
-2. **El problema:** molts vectors de tokens, un sol vector de frase
+2. **La pregunta :** molts vectors de tokens, un sol vector de frase
 3. **Estratègies de pooling:** mean, CLS, max i altres
 4. **Implementació:** la classe `Pooling` pas a pas
 5. **Integració:** com encaixa dins del model i com es desa
 6. **Aplicació:** semantic search
 7. **Conclusions**
 
-</v-clicks>
 
 ---
 layout: section
@@ -234,7 +232,7 @@ La classe `Pooling` pas a pas
 
 # La classe `Pooling`
 
-```python {all|2|4-8|10-13}{maxHeight:'400px'}
+```python{maxHeight:'400px'}
 class Pooling(nn.Module):
     POOLING_MODES = ("cls", "max", "mean", "mean_sqrt_len_tokens", "weightedmean", "lasttoken")
 
@@ -303,29 +301,6 @@ Una mitjana simple (`.mean(dim=1)`) inclouria els `[PAD]` i **falsejaria el resu
 
 La `attention_mask` indica quins tokens són reals (`1`) i quins són farciment (`0`).
 
-::right::
-
-<div class="pl-8">
-
-**Mean amb màscara**
-
-```python {all|1|2|3|4}
-mask = attention_mask.unsqueeze(-1).float()
-suma = (token_embeddings * mask).sum(dim=1)
-n_tokens = mask.sum(dim=1).clamp(min=1e-9)
-mean = suma / n_tokens          # (batch, dim)
-```
-
-**Max amb màscara**
-
-```python
-token_embeddings[mask.squeeze(-1) == 0] = float("-inf")
-max_vec = token_embeddings.max(dim=1).values
-```
-
-<div class="mt-2 text-sm opacity-70">Amb -inf, un [PAD] mai pot guanyar el màxim.</div>
-
-</div>
 
 ---
 layout: section
@@ -349,13 +324,10 @@ flowchart LR
     D --> E["Vector final"]
 ```
 
-<v-clicks>
-
 - **Transformer:** un vector per token
 - **Pooling:** un vector per frase
 - **Normalize:** vector de llargada 1, així la similitud cosinus és un producte escalar
 
-</v-clicks>
 
 ---
 layout: two-cols
@@ -363,7 +335,7 @@ layout: two-cols
 
 # Muntar el model a mà
 
-```python {all|1|2|3|5}
+```python 
 transformer = Transformer(
     "sentence-transformers/all-MiniLM-L6-v2",
     max_seq_length=256,
@@ -447,7 +419,7 @@ layout: two-cols
 
 # Semantic search
 
-```python {all|1|3-7|9}
+```python
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 query = model.encode("Gats negres")
@@ -486,16 +458,13 @@ layout: section
 
 # Conclusions
 
-<v-clicks>
 
 - **Simple però imprescindible:** sense pooling no hi ha un vector per frase
 - **La base de la semantic search** i la similitud entre frases
 - **Diverses estratègies** (mean, CLS, max…) segons com s'ha entrenat el model
-- **Robust en la pràctica:** màscara de padding, prompts i seqüències empaquetades
+- **Robust en la pràctica:** màscara de padding, prompts i etc.
 - **Codi obert:** git, pull requests i tests
-- **Connexió amb la carrera:** àlgebra lineal, xarxes neuronals i enginyeria de software
 
-</v-clicks>
 
 ---
 layout: center
